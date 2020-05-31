@@ -3,11 +3,22 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
+const mongoose = require("mongoose");
 const lodash = require("lodash");
+
+mongoose.connect("mongodb://localhost:27017/blogDB",{useNewUrlParser:true, useUnifiedTopology:true});
+
+const postSchema = {
+  title:String,
+  content:String
+}
+
+
+const Post = mongoose.model('Post',postSchema);
 
 const homeStartingContent = "Welcome to my blog Website! This is made of Node.js with its npm libraries such as Express.js, body-parser, lodash And also Templated using EJS.";
 const aboutContent = "You can post your blog composing via '+' sign in top-right corner of this page. And get redirected to the home page . You can read your full article by clicking on 'Read More'.";
-const contactContent = "No Need to contact me......😂😂😂 Sorry, the website will be upgraded with new features soon..";
+const contactContent = "You can head over to following Methods to contact us for collaborations.";
 
 const app = express();
 
@@ -16,10 +27,18 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-let posts = [];
+let posts =[]
 
 app.get("/",function(req,res){
-  res.render("home",{homePageContent: homeStartingContent, postItem: posts});
+  Post.find({},function(err,foundPost){
+    if(err){
+      console.log(err);
+    }else{
+      console.log(foundPost);
+    }
+    res.render("home",{homePageContent: homeStartingContent, postItem: foundPost});
+  })
+  
 });
 
 app.get("/about",function(req,res){
@@ -35,19 +54,25 @@ app.get("/compose",function(req, res){
 });
 
 app.post("/compose",function(req,res){
-  const post = {
+  const postTitle = req.body.postTitle;
+  const postBody = req.body.postBody;
+  const post = new Post({
     title: req.body.postTitle,
     content: req.body.postBody
-  };
-  posts.push(post);
+  });
+  post.save(function(err){
+    if(!err){
+      res.redirect("/");
+    }
+  });
   res.redirect("/")
 });
 
-app.get("/post/:postName",function(req,res){
-  postUrlName = lodash.lowerCase(req.params.postName);
-  posts.forEach(function(post){
-    postTitle = lodash.lowerCase(post.title);
-    if(postUrlName === postTitle){
+app.get("/post/:postId",function(req,res){
+  const postUrlName = lodash.lowerCase(req.params.postName);
+  const requestedPostId = req.params.postId;
+  Post.findOne({_id:requestedPostId},function(err,post){
+    if(!err){
       res.render("post",{title: post.title, content: post.content});
     }
   });
@@ -58,6 +83,6 @@ app.get("/post/:postName",function(req,res){
 
 
 
-app.listen(process.env.PORT, function() {
+app.listen(3000, function() {
   console.log("Server started on port 3000");
 });

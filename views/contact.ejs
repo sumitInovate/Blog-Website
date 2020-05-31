@@ -1,4 +1,19 @@
 <%- include("partials/header") -%>
 <h1>Contact</h1>
 <p><%= contactPageContent %></p>
+<a href="https://twitter.com/Sumit44658569"><i class="fab fa-twitter"></i></a>
+<a href="https://github.com/S-Techofficial"><i class="fab fa-github"></i></a>
+<a href="https://www.linkedin.com/in/sumit-thakur-089a1a19a/"><i class="fab fa-linkedin-in"></i></a>
+<h2 style="font-weight:bold">Mail</h2>
+<form action="mailto:sumitln2000@gmail.com" enctype="text/plain">
+    <div class="form-group">
+        <label>Name:</label>
+        <input class="form-control" type="text" placeholder="Enter Name">
+        <label>Email:</label>
+        <input class="form-control" type="email" placeholder="Enter Email">
+        <label>Query:</label>
+        <textarea class="form-control" type="text" name="postBody" rows="5" placeholder="Enter your queries"></textarea>
+    </div>
+    <button class="btn" style="background-color:#1abc9c;color:#fff" type="submit">Send</button>
+</form>
 <%- include("partials/footer") -%>
